@@ -1,7 +1,9 @@
 # c64-keyboard-USB
 Arduino Pro Micro C64 Keyboard to USB Adapter
 
-This simply fixes the cursor up to work using both left AND right shift
+First version simply fixes the cursor up to work using both left AND right shift
+
+Second version changes the C= and CTRL key behaviour, and makes C+ + F7 into F12 for my preference
 
 Originally by DJ Sures (Synthiam.com) (c)2019 
 
