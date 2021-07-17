@@ -4,15 +4,6 @@
 
 // ***********************************************************************
 // **                                                                   **
-// ** Commodore 64 USB HID for Pro Micro                                **
-// ** By DJ Sures (Synthiam.com) (c)2019                                **
-// **                                                                   **
-// ** Updated: November 30, 2019                                        **
-// **                                                                   **
-// ** This uses the real keys labelled on the C64, not pretending       **
-// ** to make a c64 into a pc keyboard. This is if you're wanting a     **
-// ** REAL emulated c64.                                                **
-// **                                                                   **
 // **      C= + F7: F12 (eg. bring VICE menu)                           **
 // ** CTRL-SHIFT-W: Shortcut for Alt-w (vice warp mode)                 **
 // **                                                                   **
@@ -81,7 +72,7 @@ uint16_t keyMap[80] = {
   KEY_INSERT,    '*',        ';',              KEY_HOME, KEY_LEFT_SHIFT,  '=',           KEY_DELETE, '/',             KEY_PAGE_UP, NULL,
 
   //  1          BS          CTRL              2         SPC              C=             Q           RunStop          Joy2Up       Joy1Up
-  '1',           KEY_ESC,    KEY_TAB,    '2',      ' ',             KEY_LEFT_CTRL,       'q',        KEY_ESC,         '8',         '\\',
+  '1',           KEY_ESC,    KEY_LEFT_CTRL,    '2',      ' ',             KEY_TAB,       'q',        KEY_ESC,         '8',         '\\',
 };
 
 void setup() {
