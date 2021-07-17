@@ -7,8 +7,7 @@ Second version changes the C= and CTRL key behaviour, and makes C+ + F7 into F12
 
 Originally by DJ Sures (Synthiam.com) (c)2019 
 
-```// ** Commodore Key: Shortcut for F12 to bring VICE menu                **
-// ** CTRL-SHIFT-W: Shortcut for Alt-w (vice warp mode)                 **
+```// ** Commodore Key: Shortcut for F12 to bring VICE menu             **
 // **                                                                   **
 // ***********************************************************************
 
