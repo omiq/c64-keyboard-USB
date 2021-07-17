@@ -4,9 +4,14 @@
 
 // ***********************************************************************
 // **                                                                   **
-// **      C= + F7: F12 (eg. bring VICE menu)                           **
-// ** CTRL-SHIFT-W: Shortcut for Alt-w (vice warp mode)                 **
 // **                                                                   **
+// ** Commodore 64 USB HID for Pro Micro                                **
+// ** Originally by DJ Sures (Synthiam.com) (c)2019                     **
+// **                                                                   **
+// ** Updated: July 17, 2021 by Chris Garrett @makerhacks               **
+// ** to fix cursor up and CTRL/C= behaviour                            **
+// **                                                                   **
+// **      C= + F7: F12 (eg. bring VICE menu)                           **
 // ***********************************************************************
 
 // C64      Arduino
