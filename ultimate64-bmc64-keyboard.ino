@@ -5,11 +5,11 @@
 #include "HID-Project.h"
 
 // ***********************************************************************
-//                                                                    
-//  Commodore 64 USB HID using Pro Micro by Chris Garrett @makerhacks  
-//                                                                    
-//  Inspired by and based on code by DJ Sures (Synthiam.com)          
-//
+// **                                                                   **
+// **                                                                   **
+// ** Commodore 64 USB HID for Pro Micro by Chris Garrett @makerhacks   **
+// **                                                                   **
+// ** Inspired by and based on code by DJ Sures (Synthiam.com)          **
 // ***********************************************************************
 
 // C64      Arduino
@@ -38,8 +38,9 @@
 //   2      N/C
 //   1      0
 
+#define KEYDELAY 30
 int  keyPos;
-int  outChar;
+uint8_t  outChar;
 bool isKeyDown;
 int lastKeyState[80];
 long lastDebounceTime[80];
@@ -65,8 +66,8 @@ Commodore 64 keyboard matrix layout
 */
 
 uint16_t keyMap[80] = {
-  // Del            Return      LR                F7        F1               F3             F5          UD               Null         Null
-  KEY_BACKSPACE, KEY_RETURN, KEY_RIGHT_ARROW,  KEY_F7,   KEY_F1,          KEY_F3,        KEY_F5,     KEY_DOWN_ARROW,  NULL,        NULL,
+  // Del            Return      LR                F7        F1           F3             F5          UD               Null         Null
+  KEY_BACKSPACE, KEY_RETURN, KEY_RIGHT_ARROW,  KEY_F7,   KEY_F1,       KEY_F3,        KEY_F5,     KEY_DOWN_ARROW,    NULL,        NULL,
 
       // 3           W           A                 4         Z                S              E           LSHFT            NULL     Joy1Down
       '3',           'w',        'a',              '4',      'z',             's',           'e',        KEY_LEFT_SHIFT,  '2',         '*',
@@ -90,11 +91,23 @@ HID_KEYBOARD_LEFT_GUI,'*',      ';',              KEY_HOME, KEY_LEFT_SHIFT,  '='
       '1',           KEY_ESC,    KEY_LEFT_CTRL,    '2',      ' ',     HID_KEYBOARD_LEFT_GUI,'q',        KEY_ESC,         '8',         '\\',
 };
 
+
+void press_key(uint8_t key)
+{
+  #ifndef DEBUG
+  BootKeyboard.press(key);
+  delay (KEYDELAY);
+  BootKeyboard.release(key);
+  #else
+  delay (KEYDELAY);
+  #endif
+}
+
 void bootsetup() {
 
   Serial.begin(115200);
   BootKeyboard.begin();
-
+  BootKeyboard.releaseAll();
 }  
 
 void special_keys() {
@@ -104,76 +117,69 @@ void special_keys() {
           {
 
           case 72:
-          #ifndef DEBUG
-            BootKeyboard.press(KEY_TAB);
-            delay(300);
+          
+            press_key(KEY_TAB);
             outChar = NULL;
-          #endif   
+             
             Serial.println("CTRL");           
             break;
     
           case 77:
-          #ifndef DEBUG
-            BootKeyboard.press(KEY_ESC);
-            delay(300);
+          
+            press_key(KEY_ESC);
             outChar = NULL;
-          #endif   
+             
             Serial.println("RUNSTOP");
             break;
     
           case 75:
-          #ifndef DEBUG
-            BootKeyboard.press(MOD_LEFT_ALT);
-            delay(300);
+          
+            press_key(MOD_LEFT_ALT);
             outChar = NULL;
-          #endif   
+             
             Serial.println("C="); 
             break;
     
           case 1:
-          #ifndef DEBUG
-            BootKeyboard.write(KEY_RETURN);
-            delay(300);
+          
+            press_key(KEY_RETURN);
             outChar = NULL;
-          #endif   
+             
             Serial.println("RETURN");           
             break;
     
           case 0:
-          #ifndef DEBUG
+          
             outChar = NULL;
-            BootKeyboard.press(KEY_BACKSPACE);
-            delay(300);
-          #endif   
+            press_key(KEY_BACKSPACE);
+             
             Serial.println("DEL");           
             break;
     
           case 63:
-          #ifndef DEBUG
-            BootKeyboard.press(KEY_HOME);
-            delay(300);
+          
+            press_key(KEY_HOME);
             outChar = NULL;
-          #endif   
+             
             Serial.println("HOME");
             break;
 
            case 2:
             if (lastKeyState[17] || lastKeyState[64] ) 
             {
-          #ifndef DEBUG
+          
               outChar = NULL;
-              BootKeyboard.write(KEY_LEFT);  
-              delay(300);
-          #endif   
+              press_key(KEY_LEFT);  
+             
               Serial.println("CURSOR LEFT");  
             } 
             else 
             {
-          #ifndef DEBUG
+          
               outChar = NULL;
-              BootKeyboard.write(KEY_RIGHT);  
-              delay(300);          
-          #endif   
+              press_key(KEY_RIGHT);  
+  
+             
               Serial.println("CURSOR RIGHT");   
             }
             break;
@@ -182,19 +188,17 @@ void special_keys() {
             outChar = NULL;
             if (lastKeyState[17] || lastKeyState[64] ) 
             {
-          #ifndef DEBUG
-              BootKeyboard.write(KEY_UP);  
-              delay(300);
+          
+              press_key(KEY_UP);  
               Serial.println("CURSOR UP");   
-          #endif   
+             
             } 
             else 
             {
-          #ifndef DEBUG
-              BootKeyboard.write(KEY_DOWN);  
-              delay(300);
+          
+              press_key(KEY_DOWN);  
               Serial.println("CURSOR DOWN");              
-          #endif   
+             
             }      
             break;
     
@@ -323,7 +327,7 @@ void loop() {
         lastDebounceTime[keyPos] = millis();
 
         #ifndef DEBUG
-        if (outChar != NULL) BootKeyboard.press(outChar);
+        if (outChar != NULL) press_key(outChar);
         #else
         Serial.print("col: ");
         Serial.print(Col);
@@ -333,6 +337,8 @@ void loop() {
         Serial.print(keyPos);
         Serial.print(", char:");
         Serial.print(outChar);
+        Serial.print(' ');
+        Serial.write(outChar);
         Serial.println();
         #endif
       }
