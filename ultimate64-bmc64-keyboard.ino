@@ -145,7 +145,7 @@ keymap[1] = KEY_ENTER;
 // BOTTOM ROW
 
 keymap[75] = KEY_LEFT_WINDOWS;
-//keymap[??] = KEY_LEFT_SHIFT;
+keymap[17] = KEY_LEFT_SHIFT;
 keymap[14] = 'z';
 keymap[27] = 'x';
 keymap[24] = 'c';
@@ -181,7 +181,7 @@ void setup() {
 
 void loop() {
 
-  thisKey    = NULL;
+  thisKey   = NULL;
   isKeyDown = NULL;
 
   for (int Row = 0; Row < 8; Row++) {
@@ -198,21 +198,22 @@ void loop() {
       // Non-blocking delay
       if (millis() < lastDebounceTime[thisKey] + debounceDelay) continue;
 
+      // Is the key currently down and was before too?
+      if (isKeyDown && lastKeyState[thisKey]) {
+        Serial.print(thisKey);
+        Serial.print(" held\n");
+      }
+      
       // Is the key currently down and wasn't before?
       if (isKeyDown && !lastKeyState[thisKey]) {
 
         // Toggle the key state
         lastKeyState[thisKey] = true;
-        if(keymap[thisKey]!=' ') {
-          Serial.print(keymap[thisKey]);
-          BootKeyboard.press(keymap[thisKey]);
-        }
-        else
-        {
-          Serial.print("\rkeymap[");
-          Serial.print(thisKey);
-          Serial.print("] = '';");
-        }
+        Serial.print(keymap[thisKey]);
+        BootKeyboard.press(keymap[thisKey]);
+        Serial.print("\rkeymap[");
+        Serial.print(thisKey);
+        Serial.print("] = '';");
       }
 
       // The key is NOT down but WAS before
@@ -221,11 +222,10 @@ void loop() {
         // Toggle the key state
         lastKeyState[thisKey] = false;
         BootKeyboard.release(keymap[thisKey]);
-/*
         Serial.print("Released: ");
         Serial.print(thisKey);
         Serial.print("\n\r");
-*/
+
       }
     }
 
