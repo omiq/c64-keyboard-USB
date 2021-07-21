@@ -90,8 +90,8 @@ void bootsetup() {
   BootKeyboard.releaseAll();
 
 // TOP ROW
-keymap[71] = '`';
-keymap[70] = '1';
+keymap[71] = '`';   // vice uses `, u64 uses _
+keymap[70] = '1'; 
 keymap[73] = '2';
 keymap[10] = '3';
 keymap[13] = '4';
@@ -122,7 +122,7 @@ keymap[46] = 'o';
 keymap[51] = 'p';
 keymap[56] = '@';
 keymap[61] = '*';
-keymap[66] = '|';
+keymap[66] = '|';   // vice uses |, u64 uses ~
 
 // THIRD ROW
 
@@ -253,7 +253,7 @@ bool ignoreKey(int keynum) {
               break;
              
             case 33:
-              printchar = '(';
+              return true;
               break;
        
             case 40:
@@ -261,7 +261,7 @@ bool ignoreKey(int keynum) {
               break;
       
             case 55:
-              printchar = '[';
+              return true;
               break;
       
             case 62:
@@ -306,9 +306,9 @@ bool specialKeys(int keynum) {
    
           case 77:
           
-            BootKeyboard.press(KEY_ESC);
+            BootKeyboard.press(KEY_PAUSE);
             delay(debounceDelay);
-            BootKeyboard.release(KEY_ESC);
+            BootKeyboard.release(KEY_PAUSE);
             Serial.println("RUNSTOP");
               return true;
             break;
@@ -396,6 +396,102 @@ bool specialKeys(int keynum) {
               return true;
             }      
             break;
+
+
+          // F-KEYS
+          case 4:
+            if ( shifted() ) 
+            {
+          
+              BootKeyboard.press(KEY_F2);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F2);  
+              Serial.println("F2");   
+              return true;
+             
+            } 
+            else 
+            {
+          
+              BootKeyboard.press(KEY_F1);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F1);  
+              Serial.println("F1");              
+              return true;
+            }      
+            break;
+
+          case 5:
+            if ( shifted() ) 
+            {
+          
+              BootKeyboard.press(KEY_F4);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F4);  
+              Serial.println("F4");   
+              return true;
+             
+            } 
+            else 
+            {
+          
+              BootKeyboard.press(KEY_F3);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F3);  
+              Serial.println("F3");              
+              return true;
+            }      
+            break;
+
+
+          case 6:
+            if ( shifted() ) 
+            {
+          
+              BootKeyboard.press(KEY_F6);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F6);  
+              Serial.println("F6");   
+              return true;
+             
+            } 
+            else 
+            {
+          
+              BootKeyboard.press(KEY_F5);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F5);  
+              Serial.println("F5");              
+              return true;
+            }      
+            break;
+
+
+          case 3:
+            if ( shifted() ) 
+            {
+          
+              BootKeyboard.press(KEY_F8);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F8);  
+              Serial.println("F8");   
+              return true;
+             
+            } 
+            else 
+            {
+          
+              BootKeyboard.press(KEY_F7);  
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_F7);  
+              Serial.println("F7");              
+              return true;
+            }      
+            break;
+
+    
+            
+            
     
           }
         
@@ -479,8 +575,10 @@ bool specialKeys(int keynum) {
 
           if(printchar!=NULL) 
           {
-            BootKeyboard.write(printchar);
-              return true;
+            BootKeyboard.press(printchar);  
+            delay(debounceDelay);
+            BootKeyboard.release(printchar);  
+            return true;
             
           }
        }
@@ -525,7 +623,7 @@ void press(uint8_t key)
 {
 
       if (shifted()) BootKeyboard.press(KEY_LEFT_SHIFT);
-      if (ckey()) BootKeyboard.press(KEY_TAB);
+      if (ckey()) BootKeyboard.press(KEY_TAB);   // vice uses KEY_TAB, u64 uses KEY_LEFT_WINDOWS
       if (ctrl()) BootKeyboard.press(KEY_LEFT_CTRL);
       BootKeyboard.press(key);
   
