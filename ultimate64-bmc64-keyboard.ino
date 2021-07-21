@@ -326,9 +326,11 @@ bool specialKeys(int keynum) {
 
             if ( shifted() ) 
             {
-              BootKeyboard.press(KEY_INSERT);
+              BootKeyboard.press(KEY_LEFT_SHIFT);
+              BootKeyboard.press(KEY_BACKSPACE);
               delay(debounceDelay);
-              BootKeyboard.release(KEY_INSERT);
+              BootKeyboard.release(KEY_BACKSPACE);
+              BootKeyboard.release(KEY_LEFT_SHIFT);
               Serial.println("INS");           
             }
             else
@@ -342,10 +344,12 @@ bool specialKeys(int keynum) {
             break;
     
           case 63:
-          
+
+            if ( shifted() ) BootKeyboard.press(KEY_LEFT_SHIFT);
             BootKeyboard.press(KEY_HOME);
             delay(debounceDelay);
             BootKeyboard.release(KEY_HOME);
+            if ( shifted() ) BootKeyboard.release(KEY_LEFT_SHIFT);
             Serial.println("HOME");
               return true;
             break;
