@@ -1,57 +1,49 @@
 
 // Uncomment to debug using serial monitor at 115200 baud
-//#define DEBUG
+#define DEBUG
 
 #include "HID-Project.h"
 
-// ***********************************************************************
-// **                                                                   **
-// **                                                                   **
-// ** Commodore 64 USB HID for Pro Micro by Chris Garrett @makerhacks   **
-// **                                                                   **
-// ** Inspired by and based on code by DJ Sures (Synthiam.com)          **
-// ***********************************************************************
+/* =======================================================================
 
-// C64      Arduino
+ Commodore 64 USB HID for Pro Micro by Chris Garrett @makerhacks   
+ 
+ Inspired by and based on code by DJ Sures (Synthiam.com)          
 
-// Rows
-//   20     2 - SDA
-//   19     3 - SCL
-//   18     4 - A6
-//   17     5
-//   16     6 - A7
-//   15     7 -
-//   14     8 - A8
-//   13     9 - A9
 
-// Columns
-//   12     10 - A10
-//   11     16 - MOSI
-//   10     14 - MISO
-//   9      15 - SCLK
-//   8      18 - A0
-//   7      19 - A1
-//   6      20 - A2
-//   5      21 - A3
-//   4      N/C
-//   3      1
-//   2      N/C
-//   1      0
+ ----------------------
+ CONNECTIONS
+ ----------------------
 
-#define KEYDELAY 30
-int  keyPos;
-uint8_t  outChar;
-bool isKeyDown;
-int lastKeyState[80];
-long lastDebounceTime[80];
-int debounceDelay = 50;
-int RowPinMap[8] = {9, 3, 4, 5, 6, 7, 8, 2};
-int ColPinMap[10] = {10, 16, 14, 21, 18, 19, 20, 15, 1, 0};
+     C64   |  Arduino
+    ==================
+       20     2 - SDA
+       19     3 - SCL
+       18     4 - A6
+       17     5
+       16     6 - A7
+       15     7 -
+       14     8 - A8
+       13     9 - A9
+       12     10 - A10
+       11     16 - MOSI
+       10     14 - MISO
+       9      15 - SCLK
+       8      18 - A0
+       7      19 - A1
+       6      20 - A2
+       5      21 - A3
+       4      -N/C-
+       3      1
+       2      -N/C-
+       1      0
+    ==================
 
-// KEYBOARD LAYOUT
-/*
+    
 
-Commodore 64 keyboard matrix layout                                                                
+        ------------------------------------
+        Commodore 64 keyboard matrix layout                                                                
+        ------------------------------------
                                                                 
         Del      Return   curl/r   F7       F1       F3       F5       curup
         3        W        A        4        Z        S        E        lSh
@@ -61,248 +53,136 @@ Commodore 64 keyboard matrix layout
         +        P        L        –        .        :        @        ,
         £        *        ;        Home     rshift   =        ↑        /
         1        ←        Ctrl     2        Space    C=       Q        Stop
-
+       
 
 */
 
-uint16_t keyMap[80] = {
-  // Del            Return      LR                F7        F1           F3             F5          UD               Null         Null
-  KEY_BACKSPACE, KEY_RETURN, KEY_RIGHT_ARROW,  KEY_F7,   KEY_F1,       KEY_F3,        KEY_F5,     KEY_DOWN_ARROW,    NULL,        NULL,
+#define KEYDELAY 30
 
-      // 3           W           A                 4         Z                S              E           LSHFT            NULL     Joy1Down
-      '3',           'w',        'a',              '4',      'z',             's',           'e',        KEY_LEFT_SHIFT,  '2',         '*',
-
-      // 5           R           D                 6         C                F              T           X                Joy2Left     Joy1Left
-     '5',           'r',        'd',              '6',      'c',             'f',           't',        'x',             '4',         '-',
-
-      // 7           Y           G                 8         B                H              U           V                Joy2Right    Joy1Right
-      '7',           'y',        'g',              '8',      'b',             'h',           'u',        'v',             '6',         '+',
-
-      // 9           I           J                 Zero      M                K              O           N                Joy2F1       Joy1F1
-      '9',           'i',        'j',              '0',      'm',             'k',           'o',        'n',             '5',         KEY_TAB,
-
-      // +           P           L                 -         .                :              @           ,                Joy2F2       Joy1F2
-      '+',           'p',        'l',              '-',      '.',             ':',           '@',        ',',             '3',         '1',
-
-      // Pound       *           ;                 Home      RSHFT            =              ↑          /                Restore      Null
-HID_KEYBOARD_LEFT_GUI,'*',      ';',              KEY_HOME, KEY_LEFT_SHIFT,  '=',           KEY_DELETE, '/',             '\\',         NULL,
-
-      //  1          BS          CTRL              2         SPC              C=             Q           RunStop          Joy2Up       Joy1Up
-      '1',           KEY_ESC,    KEY_LEFT_CTRL,    '2',      ' ',     HID_KEYBOARD_LEFT_GUI,'q',        KEY_ESC,         '8',         '\\',
-};
-
-
-void press_key(uint8_t key)
+int  thisKey;
+bool isKeyDown;
+int lastKeyState[80];
+long lastDebounceTime[80];
+int debounceDelay = 50;
+int RowPinMap[8] = {9, 3, 4, 5, 6, 7, 8, 2};
+int ColPinMap[10] = {10, 16, 14, 21, 18, 19, 20, 15, 1, 0};
+char keymap[80] = 
 {
-  #ifndef DEBUG
-  BootKeyboard.press(key);
-  delay (KEYDELAY);
-  BootKeyboard.release(key);
-  #else
-  delay (KEYDELAY);
-  #endif
-}
+// 1   2   3   4   5   6   7   8   9  10
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+  ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
+};
+  
+
+
+
 
 void bootsetup() {
 
   Serial.begin(115200);
   BootKeyboard.begin();
   BootKeyboard.releaseAll();
+
+// TOP ROW
+keymap[71] = '`';
+keymap[70] = '1';
+keymap[73] = '2';
+keymap[10] = '3';
+keymap[13] = '4';
+keymap[20] = '5';
+keymap[23] = '6';
+keymap[30] = '7';
+keymap[33] = '8';
+keymap[40] = '9';
+keymap[43] = '0';
+keymap[50] = '+';
+keymap[53] = '-';
+keymap[60] = '\\';
+keymap[63] = KEY_HOME;
+keymap[0] = KEY_BACKSPACE;
+
+
+// SECOND ROW
+keymap[72] = KEY_LEFT_CTRL;
+keymap[76] = 'q';
+keymap[11] = 'w';
+keymap[16] = 'e';
+keymap[21] = 'r';
+keymap[26] = 't';
+keymap[31] = 'y';
+keymap[36] = 'u';
+keymap[41] = 'i';
+keymap[46] = 'o';
+keymap[51] = 'p';
+keymap[56] = '@';
+keymap[61] = '*';
+keymap[66] = '|';
+
+// THIRD ROW
+
+keymap[77] = KEY_ESC;
+keymap[17] = KEY_LEFT_SHIFT;
+keymap[12] = 'a';
+keymap[15] = 's';
+keymap[22] = 'd';
+keymap[25] = 'f';
+keymap[32] = 'g';
+keymap[35] = 'h';
+keymap[42] = 'j';
+keymap[45] = 'k';
+keymap[52] = 'l';
+keymap[55] = ':';
+keymap[62] = ';';
+keymap[65] = '=';
+keymap[1] = KEY_ENTER;
+
+// BOTTOM ROW
+
+keymap[75] = KEY_LEFT_WINDOWS;
+//keymap[??] = KEY_LEFT_SHIFT;
+keymap[14] = 'z';
+keymap[27] = 'x';
+keymap[24] = 'c';
+keymap[37] = 'v';
+keymap[34] = 'b';
+keymap[47] = 'n';
+keymap[44] = 'm';
+keymap[57] = ',';
+keymap[54] = '.';
+keymap[67] = '/';
+keymap[64] = KEY_RIGHT_SHIFT;
+keymap[7] = KEY_DOWN_ARROW;
+keymap[2] = KEY_RIGHT_ARROW;
+
+// SPACE AND F1-F8
+
+keymap[74] = KEY_SPACE;
+keymap[4] = KEY_F1;
+keymap[5] = KEY_F3;
+keymap[6] = KEY_F5;
+keymap[3] = KEY_F7;
+
 }  
 
-void special_keys() {
-  
-        // Special Keys
-          switch (keyPos) 
-          {
-
-          case 72:
-          
-            press_key(KEY_TAB);
-            outChar = NULL;
-             
-            Serial.println("CTRL");           
-            break;
-    
-          case 77:
-          
-            press_key(KEY_ESC);
-            outChar = NULL;
-             
-            Serial.println("RUNSTOP");
-            break;
-    
-          case 75:
-          
-            press_key(MOD_LEFT_ALT);
-            outChar = NULL;
-             
-            Serial.println("C="); 
-            break;
-    
-          case 1:
-          
-            press_key(KEY_RETURN);
-            outChar = NULL;
-             
-            Serial.println("RETURN");           
-            break;
-    
-          case 0:
-          
-            outChar = NULL;
-            press_key(KEY_BACKSPACE);
-             
-            Serial.println("DEL");           
-            break;
-    
-          case 63:
-          
-            press_key(KEY_HOME);
-            outChar = NULL;
-             
-            Serial.println("HOME");
-            break;
-
-           case 2:
-            if (lastKeyState[17] || lastKeyState[64] ) 
-            {
-          
-              outChar = NULL;
-              press_key(KEY_LEFT);  
-             
-              Serial.println("CURSOR LEFT");  
-            } 
-            else 
-            {
-          
-              outChar = NULL;
-              press_key(KEY_RIGHT);  
-  
-             
-              Serial.println("CURSOR RIGHT");   
-            }
-            break;
-            
-            case 7:
-            outChar = NULL;
-            if (lastKeyState[17] || lastKeyState[64] ) 
-            {
-          
-              press_key(KEY_UP);  
-              Serial.println("CURSOR UP");   
-             
-            } 
-            else 
-            {
-          
-              press_key(KEY_DOWN);  
-              Serial.println("CURSOR DOWN");              
-             
-            }      
-            break;
-    
-          }
-        
-
-  
-         // Shifted / modifiers (eg. shift-2 = ")
-         if (lastKeyState[17] || lastKeyState[64] ) {
-      
-            switch (outChar) {
-              
-            case '1':
-              outChar = '!';
-              break;
-      
-            case '2':
-              outChar = '"';
-              break;
-       
-      
-            case '3':
-              outChar = '#';
-              break;
-       
-      
-            case '4':
-              outChar = '$';
-              break;
-       
-      
-            case '5':
-              outChar = '%';
-              break;
-       
-      
-            case '6':
-              outChar = '&';
-              break;
-       
-      
-            case '7':
-              outChar = '\'';
-              break;
-       
-      
-            case '8':
-              outChar = '(';
-              break;
-       
-      
-            case '9':
-              outChar = ')';
-              break;
-       
-      
-            case ':':
-              outChar = '[';
-              break;
-       
-      
-            case ';':
-              outChar = ']';
-              break;
-       
-      
-            case ',':
-              outChar = '<';
-              break;
-       
-      
-            case '.':
-              outChar = '>';
-              break;
-       
-      
-            case '/':
-              outChar = '?';
-              break;
-       
-          }
-       }
-}       
 
 void setup() {
 
   bootsetup();
-
-  for (int i = 0; i < 80; i++)
-    lastKeyState[i] = false;
-
-  for (int Row = 0; Row < 8; Row++)
-    pinMode(RowPinMap[Row], INPUT_PULLUP);
-
-  for (int Col = 0; Col < 10; Col++)
-    pinMode(ColPinMap[Col], INPUT_PULLUP);
+  for (int i = 0; i < 80; i++) lastKeyState[i] = false;
+  for (int Row = 0; Row < 8; Row++) pinMode(RowPinMap[Row], INPUT_PULLUP);
+  for (int Col = 0; Col < 10; Col++) pinMode(ColPinMap[Col], INPUT_PULLUP);
 }
 
 void loop() {
 
-  keyPos    = NULL;
-  outChar   = NULL;
+  thisKey    = NULL;
   isKeyDown = NULL;
-
 
   for (int Row = 0; Row < 8; Row++) {
 
@@ -312,53 +192,44 @@ void loop() {
 
     for (int Col = 0; Col < 10; Col++) {
 
-      keyPos    = Col + (Row * 10);
-      outChar   = keyMap[keyPos];
+      thisKey    = Col + (Row * 10);
       isKeyDown = !digitalRead(ColPinMap[Col]);
 
-      if (millis() < lastDebounceTime[keyPos] + debounceDelay)
-        continue;
+      // Non-blocking delay
+      if (millis() < lastDebounceTime[thisKey] + debounceDelay) continue;
 
-      if (isKeyDown) special_keys();
+      // Is the key currently down and wasn't before?
+      if (isKeyDown && !lastKeyState[thisKey]) {
 
-      if (isKeyDown && !lastKeyState[keyPos]) {
-
-        lastKeyState[keyPos] = true;
-        lastDebounceTime[keyPos] = millis();
-
-        #ifndef DEBUG
-        if (outChar != NULL) press_key(outChar);
-        #else
-        Serial.print("col: ");
-        Serial.print(Col);
-        Serial.print(", row: ");
-        Serial.print(Row);
-        Serial.print(", Position: ");
-        Serial.print(keyPos);
-        Serial.print(", char:");
-        Serial.print(outChar);
-        Serial.print(' ');
-        Serial.write(outChar);
-        Serial.println();
-        #endif
+        // Toggle the key state
+        lastKeyState[thisKey] = true;
+        if(keymap[thisKey]!=' ') {
+          Serial.print(keymap[thisKey]);
+          BootKeyboard.press(keymap[thisKey]);
+        }
+        else
+        {
+          Serial.print("\rkeymap[");
+          Serial.print(thisKey);
+          Serial.print("] = '';");
+        }
       }
 
-      if (!isKeyDown && lastKeyState[keyPos]) {
+      // The key is NOT down but WAS before
+      if (!isKeyDown && lastKeyState[thisKey]) {
 
-        lastKeyState[keyPos] = false;
-        lastDebounceTime[keyPos] = millis();
-
-        #ifndef DEBUG
-        if (outChar != NULL)
-        BootKeyboard.release(outChar);
-        #else
-        Serial.print("Released ");
-        Serial.print(keyPos);
-        Serial.println();
-        #endif
+        // Toggle the key state
+        lastKeyState[thisKey] = false;
+        BootKeyboard.release(keymap[thisKey]);
+/*
+        Serial.print("Released: ");
+        Serial.print(thisKey);
+        Serial.print("\n\r");
+*/
       }
     }
 
+    lastDebounceTime[thisKey] = millis();
     digitalWrite(RowPin, HIGH);
     delay(1);
     pinMode(RowPin, INPUT_PULLUP);
