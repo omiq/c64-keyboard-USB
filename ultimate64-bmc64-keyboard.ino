@@ -177,6 +177,55 @@ void setup() {
   for (int i = 0; i < 80; i++) lastKeyState[i] = false;
   for (int Row = 0; Row < 8; Row++) pinMode(RowPinMap[Row], INPUT_PULLUP);
   for (int Col = 0; Col < 10; Col++) pinMode(ColPinMap[Col], INPUT_PULLUP);
+
+}
+ 
+
+bool shifted()
+{
+
+ if((lastKeyState[17] || lastKeyState[17]) && (thisKey!=17 && thisKey!=64)) 
+  return true;
+  else
+  return false;
+}
+
+bool ckey()
+{
+  
+ if(lastKeyState[75] && thisKey!=75) 
+  return true;
+  else
+  return false;
+}
+
+
+bool ctrl()
+{
+  
+ if(lastKeyState[72] && thisKey!=72) 
+  return true;
+  else
+  return false;
+  
+}
+
+
+void press(char key)
+{
+
+      if (!shifted()) BootKeyboard.press(KEY_LEFT_SHIFT);
+
+      BootKeyboard.press(key);
+  
+}
+
+void release(char key)
+{
+
+      BootKeyboard.release(key);
+
+      if (shifted()) BootKeyboard.release(KEY_LEFT_SHIFT);  
 }
 
 void loop() {
@@ -200,8 +249,14 @@ void loop() {
 
       // Is the key currently down and was before too?
       if (isKeyDown && lastKeyState[thisKey]) {
-        Serial.print(thisKey);
-        Serial.print(" held\n");
+
+        if (thisKey!=17 && thisKey!=64) {
+          Serial.print(thisKey);
+          Serial.print(" held");
+        }
+        
+        if(shifted()) Serial.print(" SHIFT ");
+
       }
       
       // Is the key currently down and wasn't before?
@@ -209,11 +264,22 @@ void loop() {
 
         // Toggle the key state
         lastKeyState[thisKey] = true;
-        Serial.print(keymap[thisKey]);
-        BootKeyboard.press(keymap[thisKey]);
-        Serial.print("\rkeymap[");
-        Serial.print(thisKey);
-        Serial.print("] = '';");
+
+        if (thisKey!=17 && thisKey!=64) {
+          Serial.print(keymap[thisKey]);
+          Serial.print("(");
+
+          if (shifted)
+            Serial.print(thisKey|MOD_LEFT_SHIFT);
+          else
+            Serial.print(thisKey);
+                    
+          Serial.print(")");
+          Serial.print("\n\r");
+        }
+        
+        press(keymap[thisKey]);
+        
       }
 
       // The key is NOT down but WAS before
@@ -221,11 +287,14 @@ void loop() {
 
         // Toggle the key state
         lastKeyState[thisKey] = false;
-        BootKeyboard.release(keymap[thisKey]);
-        Serial.print("Released: ");
-        Serial.print(thisKey);
-        Serial.print("\n\r");
+        
+        release(keymap[thisKey]);
 
+        if (thisKey!=17 && thisKey!=64) {
+          Serial.print("Released: ");
+          Serial.print(thisKey);
+          Serial.print("\n\r");
+        }
       }
     }
 
