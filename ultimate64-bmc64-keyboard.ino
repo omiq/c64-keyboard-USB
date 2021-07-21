@@ -306,7 +306,7 @@ bool specialKeys(int keynum) {
    
           case 77:
           
-            BootKeyboard.press(KEY_PAUSE);
+            BootKeyboard.press(KEY_ESC);  // Vice uses KEY_ESC, u64 uses KEY_PAUSE
             delay(debounceDelay);
             BootKeyboard.release(KEY_PAUSE);
             Serial.println("RUNSTOP");
