@@ -214,8 +214,9 @@ bool ctrl()
 void press(char key)
 {
 
-      if (!shifted()) BootKeyboard.press(KEY_LEFT_SHIFT);
-
+      if (shifted()) BootKeyboard.press(KEY_LEFT_SHIFT);
+      if (ckey()) BootKeyboard.press(KEY_TAB);
+      if (ctrl()) BootKeyboard.press(KEY_LEFT_CTRL);
       BootKeyboard.press(key);
   
 }
@@ -225,7 +226,9 @@ void release(char key)
 
       BootKeyboard.release(key);
 
-      if (shifted()) BootKeyboard.release(KEY_LEFT_SHIFT);  
+      if (shifted()) BootKeyboard.release(KEY_LEFT_SHIFT);
+      if (ckey()) BootKeyboard.release(KEY_TAB);
+      if (ctrl()) BootKeyboard.release(KEY_LEFT_CTRL);
 }
 
 void loop() {
