@@ -2,7 +2,50 @@
 // Uncomment to debug using serial monitor at 115200 baud
 #define DEBUG
 
+// Uncomment the correct target machine to use your C64 keyboard with
+//#define U64
+//#define VICE
+#define MISTER
+//#define BMC64
+
+
 #include "HID-Project.h"
+
+// RUNSTOP Vice uses KEY_ESC, u64 uses KEY_PAUSE
+// CTRL vice uses KEY_TAB, u64 uses KEY_LEFT_WINDOWS
+// MiSTer uses KEY_LEFT_CTRL as CTRL and C= is KEY_LEFT_ALT
+
+#if defined(VICE) 
+#define KEYSTOP KEY_ESC  
+#define CKEY KEY_TAB
+#define CTRLKEY KEY_LEFT_CTRL
+#define LEFTARROW '_'
+#define UPARROW '~'
+
+#elif defined(MISTER)
+#define KEYSTOP KEY_ESC  
+#define CKEY KEY_LEFT_ALT
+#define CTRLKEY KEY_LEFT_CTRL
+#define LEFTARROW '_'
+#define UPARROW KEY_F9
+
+#elif defined(U64)
+#define KEYSTOP KEY_PAUSE
+#define CKEY KEY_LEFT_WINDOWS
+#define CTRLKEY KEY_LEFT_CTRL
+#define LEFTARROW '~'
+#define UPARROW '|'
+
+#else
+#define KEYSTOP KEY_ESC
+#define CKEY KEY_LEFT_WINDOWS
+#define CTRLKEY KEY_LEFT_CTRL
+#define LEFTARROW '_'
+#define UPARROW '~'
+#endif
+
+
+
 
 /* =======================================================================
 
@@ -90,7 +133,7 @@ void bootsetup() {
   BootKeyboard.releaseAll();
 
 // TOP ROW
-keymap[71] = '_';   // vice uses _, u64 uses ~
+keymap[71] = LEFTARROW;   // vice uses _, u64 uses ~
 keymap[70] = '1'; 
 keymap[73] = '2';
 keymap[10] = '3';
@@ -122,7 +165,7 @@ keymap[46] = 'o';
 keymap[51] = 'p';
 keymap[56] = '@';
 keymap[61] = '*';
-keymap[66] = '~';   // vice uses ~, u64 uses |
+keymap[71] = UPARROW;   
 
 // THIRD ROW
 
@@ -305,10 +348,10 @@ bool specialKeys(int keynum) {
             break;
    
           case 77:
-          
-            BootKeyboard.press(KEY_ESC);  // Vice uses KEY_ESC, u64 uses KEY_PAUSE
+                  
+            BootKeyboard.press(KEYSTOP);  
             delay(debounceDelay);
-            BootKeyboard.release(KEY_PAUSE);
+            BootKeyboard.release(KEYSTOP);
             Serial.println("RUNSTOP");
               return true;
             break;
@@ -623,8 +666,8 @@ void press(uint8_t key)
 {
 
       if (shifted()) BootKeyboard.press(KEY_LEFT_SHIFT);
-      if (ckey()) BootKeyboard.press(KEY_TAB);   // vice uses KEY_TAB, u64 uses KEY_LEFT_WINDOWS
-      if (ctrl()) BootKeyboard.press(KEY_LEFT_CTRL);
+      if (ckey()) BootKeyboard.press(CKEY);   
+      if (ctrl()) BootKeyboard.press(CTRLKEY);
       BootKeyboard.press(key);
   
 }
@@ -635,8 +678,8 @@ void release(uint8_t key)
       BootKeyboard.release(key);
 
       if (shifted()) BootKeyboard.release(KEY_LEFT_SHIFT);
-      if (ckey()) BootKeyboard.release(KEY_TAB);
-      if (ctrl()) BootKeyboard.release(KEY_LEFT_CTRL);
+      if (ckey()) BootKeyboard.release(CKEY);
+      if (ctrl()) BootKeyboard.release(CTRLKEY);
 }
 
 void loop() {
