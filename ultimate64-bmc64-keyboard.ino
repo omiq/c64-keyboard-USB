@@ -90,7 +90,7 @@ void bootsetup() {
   BootKeyboard.releaseAll();
 
 // TOP ROW
-keymap[71] = '`';   // vice uses `, u64 uses _
+keymap[71] = '_';   // vice uses _, u64 uses ~
 keymap[70] = '1'; 
 keymap[73] = '2';
 keymap[10] = '3';
@@ -122,7 +122,7 @@ keymap[46] = 'o';
 keymap[51] = 'p';
 keymap[56] = '@';
 keymap[61] = '*';
-keymap[66] = '|';   // vice uses |, u64 uses ~
+keymap[66] = '~';   // vice uses ~, u64 uses |
 
 // THIRD ROW
 
