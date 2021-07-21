@@ -63,7 +63,7 @@ int  thisKey;
 bool isKeyDown;
 int lastKeyState[80];
 long lastDebounceTime[80];
-int debounceDelay = 50;
+int debounceDelay = 100;
 int RowPinMap[8] = {9, 3, 4, 5, 6, 7, 8, 2};
 int ColPinMap[10] = {10, 16, 14, 21, 18, 19, 20, 15, 1, 0};
 char keymap[80] = 
@@ -180,13 +180,129 @@ void setup() {
 
 }
 
+bool ignoreKey(int keynum) {
+  
+        // Special Keys
+          switch (keynum) 
+          {
+            
+          case 74:
+            return true;
+            break;
+   
+          case 77:
+            return true;
+            break;
+      
+          case 1:
+            return true;
+            break;
+    
+          case 0:
+            return true;
+            break;
+    
+          case 63:        
+            return true;
+            break;
+
+          case 2:
+            return true;
+            break;
+            
+          case 7:
+            return true;
+            break;
+    
+          }
+        
+
+         // Shifted / modifiers (eg. shift-2 = ")
+         if ( shifted() ) {
+
+            printchar = NULL;
+      
+            switch (keynum) {
+              
+            case 70:
+              return true;
+              break;
+      
+            case 73:
+              return true;
+              break;
+            
+            case 10:
+              return true;
+              break;
+             
+            case 13:
+              return true;
+              break;
+             
+            case 20:
+              return true;
+              break;
+             
+            case 23:
+              return true;
+              break;
+             
+            case 30:
+              return true;
+              break;
+             
+            case 33:
+              printchar = '(';
+              break;
+       
+            case 40:
+              return true;
+              break;
+      
+            case 55:
+              printchar = '[';
+              break;
+      
+            case 62:
+              return true;
+              break;
+      
+            case 57:
+              return true;
+              break;
+      
+            case 54:
+              return true;
+              break;
+            
+            case 67:
+              return true;
+              break;
+
+       
+          }
+
+       }
+
+       // Didn't match any of these keys/combos so return false
+       return false;
+}       
+
 
 bool specialKeys(int keynum) {
   
         // Special Keys
           switch (keynum) 
           {
-
+          case 74:
+          
+            BootKeyboard.press(KEY_SPACE);
+            delay(debounceDelay);
+            BootKeyboard.release(KEY_SPACE);
+            Serial.println("SPACE");
+            return true;
+            break;
    
           case 77:
           
@@ -199,8 +315,9 @@ bool specialKeys(int keynum) {
       
           case 1:
           
-            BootKeyboard.write(KEY_RETURN);      
+            BootKeyboard.press(KEY_RETURN);      
             delay(debounceDelay);
+            BootKeyboard.release(KEY_RETURN);      
             Serial.println("RETURN");           
               return true;
             break;
@@ -237,16 +354,18 @@ bool specialKeys(int keynum) {
             if ( shifted() ) 
             {
           
-              BootKeyboard.write(KEY_LEFT);  
+              BootKeyboard.press(KEY_LEFT);  
               delay(debounceDelay);
+              BootKeyboard.release(KEY_LEFT);  
               Serial.println("CURSOR LEFT");  
               return true;
             } 
             else 
             {
           
-              BootKeyboard.write(KEY_RIGHT);  
-              delay(debounceDelay);                     
+              BootKeyboard.press(KEY_RIGHT);  
+              delay(debounceDelay);     
+              BootKeyboard.release(KEY_RIGHT);                  
               Serial.println("CURSOR RIGHT");   
               return true;
             }
@@ -256,8 +375,9 @@ bool specialKeys(int keynum) {
             if ( shifted() ) 
             {
           
-              BootKeyboard.write(KEY_UP);  
+              BootKeyboard.press(KEY_UP);  
               delay(debounceDelay);
+              BootKeyboard.release(KEY_UP);  
               Serial.println("CURSOR UP");   
               return true;
              
@@ -265,8 +385,9 @@ bool specialKeys(int keynum) {
             else 
             {
           
-              BootKeyboard.write(KEY_DOWN);  
+             BootKeyboard.press(KEY_DOWN);  
               delay(debounceDelay);
+              BootKeyboard.release(KEY_DOWN);  
               Serial.println("CURSOR DOWN");              
               return true;
             }      
@@ -360,6 +481,7 @@ bool specialKeys(int keynum) {
           }
        }
 
+       // Didn't match any of these keys/combos so return false
        return false;
 }       
 
@@ -464,7 +586,7 @@ void loop() {
         // Toggle the key state
         lastKeyState[thisKey] = false;
         
-        release(keymap[thisKey]);
+        if(!ignoreKey(thisKey)) release(keymap[thisKey]);
       }
     }
 
