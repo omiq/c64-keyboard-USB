@@ -79,7 +79,7 @@ char keymap[80] =
   ' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',
 };
   
-
+char printchar;
 
 
 
@@ -179,12 +179,196 @@ void setup() {
   for (int Col = 0; Col < 10; Col++) pinMode(ColPinMap[Col], INPUT_PULLUP);
 
 }
+
+
+bool specialKeys(int keynum) {
+  
+        // Special Keys
+          switch (keynum) 
+          {
+
+   
+          case 77:
+          
+            BootKeyboard.press(KEY_ESC);
+            delay(debounceDelay);
+            BootKeyboard.release(KEY_ESC);
+            Serial.println("RUNSTOP");
+              return true;
+            break;
+      
+          case 1:
+          
+            BootKeyboard.write(KEY_RETURN);      
+            delay(debounceDelay);
+            Serial.println("RETURN");           
+              return true;
+            break;
+    
+          case 0:
+
+            if ( shifted() ) 
+            {
+              BootKeyboard.press(KEY_INSERT);
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_INSERT);
+              Serial.println("INS");           
+            }
+            else
+            {
+              BootKeyboard.press(KEY_BACKSPACE);
+              delay(debounceDelay);
+              BootKeyboard.release(KEY_BACKSPACE);
+              Serial.println("DEL");    
+            }
+            return true;
+            break;
+    
+          case 63:
+          
+            BootKeyboard.press(KEY_HOME);
+            delay(debounceDelay);
+            BootKeyboard.release(KEY_HOME);
+            Serial.println("HOME");
+              return true;
+            break;
+
+          case 2:
+            if ( shifted() ) 
+            {
+          
+              BootKeyboard.write(KEY_LEFT);  
+              delay(debounceDelay);
+              Serial.println("CURSOR LEFT");  
+              return true;
+            } 
+            else 
+            {
+          
+              BootKeyboard.write(KEY_RIGHT);  
+              delay(debounceDelay);                     
+              Serial.println("CURSOR RIGHT");   
+              return true;
+            }
+            break;
+            
+          case 7:
+            if ( shifted() ) 
+            {
+          
+              BootKeyboard.write(KEY_UP);  
+              delay(debounceDelay);
+              Serial.println("CURSOR UP");   
+              return true;
+             
+            } 
+            else 
+            {
+          
+              BootKeyboard.write(KEY_DOWN);  
+              delay(debounceDelay);
+              Serial.println("CURSOR DOWN");              
+              return true;
+            }      
+            break;
+    
+          }
+        
+
+         // Shifted / modifiers (eg. shift-2 = ")
+         if ( shifted() ) {
+
+            printchar = NULL;
+      
+            switch (keynum) {
+              
+            case 70:
+              printchar = '!';
+              break;
+      
+            case 73:
+              printchar = '"';
+              break;
+       
+      
+            case 10:
+              printchar = '#';
+              break;
+       
+      
+            case 13:
+              printchar = '$';
+              break;
+       
+      
+            case 20:
+              printchar = '%';
+              break;
+       
+      
+            case 23:
+              printchar = '&';
+              break;
+       
+      
+            case 30:
+              printchar = '\'';
+              break;
+       
+      
+            case 33:
+              printchar = '(';
+              break;
+       
+      
+            case 40:
+              printchar = ')';
+              break;
+       
+      
+            case 55:
+              printchar = '[';
+              break;
+       
+      
+            case 62:
+              printchar = ']';
+              break;
+       
+      
+            case 57:
+              printchar = '<';
+              break;
+       
+      
+            case 54:
+              printchar = '>';
+              break;
+       
+      
+            case 67:
+              printchar = '?';
+              break;
+       
+          }
+
+          if(printchar!=NULL) 
+          {
+            BootKeyboard.write(printchar);
+              return true;
+            
+          }
+       }
+
+       return false;
+}       
+
  
 
 bool shifted()
 {
 
- if((lastKeyState[17] || lastKeyState[17]) && (thisKey!=17 && thisKey!=64)) 
+ if((lastKeyState[17] || lastKeyState[64]) && (thisKey!=17 && thisKey!=64)) 
   return true;
   else
   return false;
@@ -211,7 +395,7 @@ bool ctrl()
 }
 
 
-void press(char key)
+void press(uint8_t key)
 {
 
       if (shifted()) BootKeyboard.press(KEY_LEFT_SHIFT);
@@ -221,7 +405,7 @@ void press(char key)
   
 }
 
-void release(char key)
+void release(uint8_t key)
 {
 
       BootKeyboard.release(key);
@@ -252,13 +436,8 @@ void loop() {
 
       // Is the key currently down and was before too?
       if (isKeyDown && lastKeyState[thisKey]) {
-
-        if (thisKey!=17 && thisKey!=64) {
-          Serial.print(thisKey);
-          Serial.print(" held");
-        }
-        
-        if(shifted()) Serial.print(" SHIFT ");
+       
+        // if(shifted()) Serial.print(" SHIFT ");
 
       }
       
@@ -269,20 +448,14 @@ void loop() {
         lastKeyState[thisKey] = true;
 
         if (thisKey!=17 && thisKey!=64) {
-          Serial.print(keymap[thisKey]);
-          Serial.print("(");
-
-          if (shifted)
-            Serial.print(thisKey|MOD_LEFT_SHIFT);
-          else
-            Serial.print(thisKey);
-                    
-          Serial.print(")");
+          Serial.print(thisKey);
+          Serial.print("('");
+          Serial.write(keymap[thisKey]);               
+          Serial.print("')");
           Serial.print("\n\r");
         }
-        
-        press(keymap[thisKey]);
-        
+
+        if(!specialKeys(thisKey)) press(keymap[thisKey]);
       }
 
       // The key is NOT down but WAS before
@@ -292,12 +465,6 @@ void loop() {
         lastKeyState[thisKey] = false;
         
         release(keymap[thisKey]);
-
-        if (thisKey!=17 && thisKey!=64) {
-          Serial.print("Released: ");
-          Serial.print(thisKey);
-          Serial.print("\n\r");
-        }
       }
     }
 
