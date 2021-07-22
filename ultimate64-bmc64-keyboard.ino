@@ -4,9 +4,9 @@
 
 // Uncomment the correct target machine to use your C64 keyboard with
 //#define U64
-#define VICE
+//#define VICE
 //#define MISTER
-//#define BMC64
+#define BMC64
 
 
 #include "HID-Project.h"
@@ -35,6 +35,13 @@
 #define CTRLKEY KEY_LEFT_CTRL
 #define LEFTARROW '~'
 #define UPARROW '|'
+
+#elif defined(BMC64)
+#define KEYSTOP KEY_ESC
+#define CKEY KEY_LEFT_CTRL
+#define CTRLKEY KEY_TAB
+#define LEFTARROW '`'
+#define UPARROW '^'
 
 #else
 #define KEYSTOP KEY_ESC
@@ -565,19 +572,28 @@ bool specialKeys(int keynum) {
             } 
             else 
             {
-          
-              BootKeyboard.press(KEY_F7);  
-              delay(debounceDelay);
-              BootKeyboard.release(KEY_F7);  
-              Serial.println("F7");              
-              return true;
+                // C= F7 brings up the menu in BMC64
+                if( ckey() )
+                {
+                  BootKeyboard.press(CKEY);                 
+                  BootKeyboard.press(KEY_F7);  
+                  delay(debounceDelay);
+                  BootKeyboard.release(KEY_F7);  
+                  BootKeyboard.press(CKEY);  
+                  Serial.println("C= F7");              
+                  return true;
+                }
+                else
+                {
+                  BootKeyboard.press(KEY_F7);  
+                  delay(debounceDelay);
+                  BootKeyboard.release(KEY_F7);  
+                  Serial.println("F7");              
+                  return true;
+                }
             }      
-            break;
-
-    
-            
-            
-    
+            break;       
+                
           }
         
 
