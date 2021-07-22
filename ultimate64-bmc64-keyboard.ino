@@ -229,6 +229,30 @@ bool ignoreKey(int keynum) {
           switch (keynum) 
           {
 
+          case 0:
+            return true;
+            break;
+      
+          case 1:
+            return true;
+            break;
+
+          case 2:
+            return true;
+            break;
+            
+          case 7:
+            return true;
+            break;
+
+          case 63:        
+            return true;
+            break;
+
+          case 66:        
+            return true;
+            break;
+
           case 71:
             return true;
             break;
@@ -240,31 +264,7 @@ bool ignoreKey(int keynum) {
           case 77:
             return true;
             break;
-      
-          case 1:
-            return true;
-            break;
-    
-          case 0:
-            return true;
-            break;
-
-          case 66:        
-            return true;
-            break;
-    
-          case 63:        
-            return true;
-            break;
-
-          case 2:
-            return true;
-            break;
-            
-          case 7:
-            return true;
-            break;
-    
+  
           }
         
 
@@ -275,14 +275,7 @@ bool ignoreKey(int keynum) {
       
             switch (keynum) {
               
-            case 70:
-              return true;
-              break;
-      
-            case 73:
-              return true;
-              break;
-            
+           
             case 10:
               return true;
               break;
@@ -311,26 +304,37 @@ bool ignoreKey(int keynum) {
               return true;
               break;
       
-            case 55:
+            case 54:
               return true;
               break;
-      
-            case 62:
+              
+            case 55:
               return true;
               break;
       
             case 57:
               return true;
               break;
-      
-            case 54:
+              
+            case 62:
               return true;
               break;
-            
+                  
             case 67:
               return true;
               break;
+              
+            case 70:
+              return true;
+              break;
+      
+            case 73:
+              return true;
+              break;
 
+            case 75:
+              return true;
+              break;
        
           }
 
@@ -371,7 +375,19 @@ bool specialKeys(int keynum) {
             BootKeyboard.release(KEY_SPACE);
             Serial.println("SPACE");
             return true;
-            break;                        
+            break;   
+
+          case 75:
+
+            if ( shifted() ) 
+            {
+              BootKeyboard.press(KEY_LEFT_SHIFT);
+              BootKeyboard.press(CKEY);
+              delay(debounceDelay);
+              BootKeyboard.release(CKEY);
+              BootKeyboard.release(KEY_LEFT_SHIFT);
+              Serial.println("CHANGE CASE");           
+            }
    
           case 77:
                   
