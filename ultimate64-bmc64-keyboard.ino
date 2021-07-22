@@ -1,12 +1,13 @@
 
 // Uncomment to debug using serial monitor at 115200 baud
-#define DEBUG
+// #define DEBUG
 
 // Uncomment the correct target machine to use your C64 keyboard with
+// For RetroPie try VICE
 //#define U64
-//#define VICE
+#define VICE
 //#define MISTER
-#define BMC64
+//#define BMC64
 
 
 #include "HID-Project.h"
@@ -131,11 +132,35 @@ char keymap[80] =
   
 char printchar;
 
+void SerialPrintLine(String outstring)
+{
+  #ifdef DEBUG
+  Serial.println(outstring);
+  #endif
+}
+
+void SerialPrint(String outstring)
+{
+  #ifdef DEBUG
+  Serial.print(outstring);
+  #endif
+}
+
+
+void SerialWrite(char outstring)
+{
+  #ifdef DEBUG
+  Serial.write(outstring);
+  #endif
+}
 
 
 void bootsetup() {
 
+  #ifdef DEBUG
   Serial.begin(115200);
+  #endif
+  
   BootKeyboard.begin();
   BootKeyboard.releaseAll();
 
@@ -362,7 +387,7 @@ bool specialKeys(int keynum) {
             BootKeyboard.press(UPARROW);
             delay(debounceDelay);
             BootKeyboard.release(UPARROW);
-            Serial.println("SPACE");
+            SerialPrintLine("SPACE");
             return true;
             break;
 
@@ -371,7 +396,7 @@ bool specialKeys(int keynum) {
             BootKeyboard.press(LEFTARROW);
             delay(debounceDelay);
             BootKeyboard.release(LEFTARROW);
-            Serial.println("SPACE");
+            SerialPrintLine("SPACE");
             return true;
             break;
             
@@ -380,7 +405,7 @@ bool specialKeys(int keynum) {
             BootKeyboard.press(KEY_SPACE);
             delay(debounceDelay);
             BootKeyboard.release(KEY_SPACE);
-            Serial.println("SPACE");
+            SerialPrintLine("SPACE");
             return true;
             break;   
 
@@ -393,7 +418,7 @@ bool specialKeys(int keynum) {
               delay(debounceDelay);
               BootKeyboard.release(CKEY);
               BootKeyboard.release(KEY_LEFT_SHIFT);
-              Serial.println("CHANGE CASE");           
+              SerialPrintLine("CHANGE CASE");           
             }
    
           case 77:
@@ -401,7 +426,7 @@ bool specialKeys(int keynum) {
             BootKeyboard.press(KEYSTOP);  
             delay(debounceDelay);
             BootKeyboard.release(KEYSTOP);
-            Serial.println("RUNSTOP");
+            SerialPrintLine("RUNSTOP");
               return true;
             break;
       
@@ -410,7 +435,7 @@ bool specialKeys(int keynum) {
             BootKeyboard.press(KEY_RETURN);      
             delay(debounceDelay);
             BootKeyboard.release(KEY_RETURN);      
-            Serial.println("RETURN");           
+            SerialPrintLine("RETURN");           
               return true;
             break;
     
@@ -423,14 +448,14 @@ bool specialKeys(int keynum) {
               delay(debounceDelay);
               BootKeyboard.release(KEY_BACKSPACE);
               BootKeyboard.release(KEY_LEFT_SHIFT);
-              Serial.println("INS");           
+              SerialPrintLine("INS");           
             }
             else
             {
               BootKeyboard.press(KEY_BACKSPACE);
               delay(debounceDelay);
               BootKeyboard.release(KEY_BACKSPACE);
-              Serial.println("DEL");    
+              SerialPrintLine("DEL");    
             }
             return true;
             break;
@@ -442,7 +467,7 @@ bool specialKeys(int keynum) {
             delay(debounceDelay);
             BootKeyboard.release(KEY_HOME);
             if ( shifted() ) BootKeyboard.release(KEY_LEFT_SHIFT);
-            Serial.println("HOME");
+            SerialPrintLine("HOME");
               return true;
             break;
 
@@ -453,7 +478,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_LEFT);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_LEFT);  
-              Serial.println("CURSOR LEFT");  
+              SerialPrintLine("CURSOR LEFT");  
               return true;
             } 
             else 
@@ -462,7 +487,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_RIGHT);  
               delay(debounceDelay);     
               BootKeyboard.release(KEY_RIGHT);                  
-              Serial.println("CURSOR RIGHT");   
+              SerialPrintLine("CURSOR RIGHT");   
               return true;
             }
             break;
@@ -474,7 +499,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_UP);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_UP);  
-              Serial.println("CURSOR UP");   
+              SerialPrintLine("CURSOR UP");   
               return true;
              
             } 
@@ -484,7 +509,7 @@ bool specialKeys(int keynum) {
              BootKeyboard.press(KEY_DOWN);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_DOWN);  
-              Serial.println("CURSOR DOWN");              
+              SerialPrintLine("CURSOR DOWN");              
               return true;
             }      
             break;
@@ -498,7 +523,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_F2);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_F2);  
-              Serial.println("F2");   
+              SerialPrintLine("F2");   
               return true;
              
             } 
@@ -508,7 +533,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_F1);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_F1);  
-              Serial.println("F1");              
+              SerialPrintLine("F1");              
               return true;
             }      
             break;
@@ -520,7 +545,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_F4);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_F4);  
-              Serial.println("F4");   
+              SerialPrintLine("F4");   
               return true;
              
             } 
@@ -530,7 +555,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_F3);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_F3);  
-              Serial.println("F3");              
+              SerialPrintLine("F3");              
               return true;
             }      
             break;
@@ -543,7 +568,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_F6);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_F6);  
-              Serial.println("F6");   
+              SerialPrintLine("F6");   
               return true;
              
             } 
@@ -553,7 +578,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_F5);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_F5);  
-              Serial.println("F5");              
+              SerialPrintLine("F5");              
               return true;
             }      
             break;
@@ -566,7 +591,7 @@ bool specialKeys(int keynum) {
               BootKeyboard.press(KEY_F8);  
               delay(debounceDelay);
               BootKeyboard.release(KEY_F8);  
-              Serial.println("F8");   
+              SerialPrintLine("F8");   
               return true;
              
             } 
@@ -580,7 +605,7 @@ bool specialKeys(int keynum) {
                   delay(debounceDelay);
                   BootKeyboard.release(KEY_F7);  
                   BootKeyboard.press(CKEY);  
-                  Serial.println("C= F7");              
+                  SerialPrintLine("C= F7");              
                   return true;
                 }
                 else
@@ -588,7 +613,7 @@ bool specialKeys(int keynum) {
                   BootKeyboard.press(KEY_F7);  
                   delay(debounceDelay);
                   BootKeyboard.release(KEY_F7);  
-                  Serial.println("F7");              
+                  SerialPrintLine("F7");              
                   return true;
                 }
             }      
@@ -679,6 +704,7 @@ bool specialKeys(int keynum) {
             BootKeyboard.press(printchar);  
             delay(debounceDelay);
             BootKeyboard.release(printchar);  
+            SerialWrite(printchar);
             return true;
             
           }
@@ -762,7 +788,7 @@ void loop() {
       // Is the key currently down and was before too?
       if (isKeyDown && lastKeyState[thisKey]) {
        
-        // if(shifted()) Serial.print(" SHIFT ");
+        // if(shifted()) SerialPrint(" SHIFT ");
 
       }
       
@@ -773,11 +799,11 @@ void loop() {
         lastKeyState[thisKey] = true;
 
         if (thisKey!=17 && thisKey!=64) {
-          Serial.print(thisKey);
-          Serial.print("('");
-          Serial.write(keymap[thisKey]);               
-          Serial.print("')");
-          Serial.print("\n\r");
+          SerialPrint(String(thisKey));
+          SerialPrint("('");
+          SerialWrite(keymap[thisKey]);               
+          SerialPrint("')");
+          SerialPrint("\n\r");
         }
 
         if(!specialKeys(thisKey)) press(keymap[thisKey]);
