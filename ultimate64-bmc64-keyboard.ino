@@ -4,8 +4,8 @@
 
 // Uncomment the correct target machine to use your C64 keyboard with
 //#define U64
-//#define VICE
-#define MISTER
+#define VICE
+//#define MISTER
 //#define BMC64
 
 
@@ -228,7 +228,11 @@ bool ignoreKey(int keynum) {
         // Special Keys
           switch (keynum) 
           {
-            
+
+          case 71:
+            return true;
+            break;
+               
           case 74:
             return true;
             break;
@@ -242,6 +246,10 @@ bool ignoreKey(int keynum) {
             break;
     
           case 0:
+            return true;
+            break;
+
+          case 66:        
             return true;
             break;
     
@@ -338,6 +346,24 @@ bool specialKeys(int keynum) {
         // Special Keys
           switch (keynum) 
           {
+          case 66:
+          
+            BootKeyboard.press(UPARROW);
+            delay(debounceDelay);
+            BootKeyboard.release(UPARROW);
+            Serial.println("SPACE");
+            return true;
+            break;
+
+          case 71:
+          
+            BootKeyboard.press(LEFTARROW);
+            delay(debounceDelay);
+            BootKeyboard.release(LEFTARROW);
+            Serial.println("SPACE");
+            return true;
+            break;
+            
           case 74:
           
             BootKeyboard.press(KEY_SPACE);
@@ -345,7 +371,7 @@ bool specialKeys(int keynum) {
             BootKeyboard.release(KEY_SPACE);
             Serial.println("SPACE");
             return true;
-            break;
+            break;                        
    
           case 77:
                   
