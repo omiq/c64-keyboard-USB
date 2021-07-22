@@ -4,7 +4,7 @@ Arduino Pro Micro code that allows you to use a real C64 Keyboard via USB, not j
 
 1. First version is a modification of firmware **originally by DJ Sures** (Synthiam.com) (c)2019 that simply fixes the cursor up to work using both left AND right shift
 1. Second version changes the C= and CTRL key behaviour, and makes C= + F7 into F12 for my preference
-1. The third version is mostly likely the one you want - it is a new (work in progress) rebuilt from almost ground up version that will be detected by both regular Mac/Windows/Linux AND bare-metal/FPGA such as MiSTer, BMC64 and Ultimate64. You will need the [HID](https://github.com/NicoHood/HID) library for Arduino.
+1. [The third version is mostly likely the one you want](https://github.com/omiq/c64-keyboard-USB/blob/main/ultimate64-bmc64-keyboard.ino) - it is a new (work in progress) rebuilt from almost ground up version that will be detected by both regular Mac/Windows/Linux AND bare-metal/FPGA such as MiSTer, BMC64 and Ultimate64. You will need the [HID](https://github.com/NicoHood/HID) library for Arduino.
 
 
 ### Uncomment the correct target machine to use your C64 keyboard with
