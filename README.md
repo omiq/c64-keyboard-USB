@@ -8,10 +8,10 @@ Arduino Pro Micro C64 Keyboard to USB Adapter
 
 ### Uncomment the correct target machine to use your C64 keyboard with
 
-//#define U64
-//#define VICE
-//#define MISTER
-//#define BMC64
+* U64
+* VICE
+* MISTER
+* BMC64
 
 
 
