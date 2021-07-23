@@ -3,7 +3,6 @@
 // #define DEBUG
 
 // Uncomment the correct target machine to use your C64 keyboard with
-// For RetroPie try VICE
 //#define U64
 #define VICE
 //#define MISTER
@@ -27,7 +26,7 @@
 #define KEYSTOP KEY_ESC  
 #define CKEY KEY_LEFT_ALT
 #define CTRLKEY KEY_LEFT_CTRL
-#define LEFTARROW '_'
+#define LEFTARROW '`'
 #define UPARROW KEY_F9
 
 #elif defined(U64)
@@ -277,7 +276,27 @@ bool ignoreKey(int keynum) {
             return true;
             break;
 
+          case 50:
+            return true;
+            break;
+            
+          case 55:
+            return true;
+            break;
+            
+          case 56:
+            return true;
+            break;
+            
+          case 62:
+            return true;
+            break;
+            
           case 63:        
+            return true;
+            break;
+                   
+          case 65:        
             return true;
             break;
 
@@ -418,7 +437,9 @@ bool specialKeys(int keynum) {
               delay(debounceDelay);
               BootKeyboard.release(CKEY);
               BootKeyboard.release(KEY_LEFT_SHIFT);
-              SerialPrintLine("CHANGE CASE");           
+              SerialPrintLine("CHANGE CASE"); 
+              return true;
+              break;          
             }
    
           case 77:
@@ -427,8 +448,76 @@ bool specialKeys(int keynum) {
             delay(debounceDelay);
             BootKeyboard.release(KEYSTOP);
             SerialPrintLine("RUNSTOP");
-              return true;
+            return true;
             break;
+
+          case 50:
+            #if defined(MISTER)           
+              printchar = '=';
+            #else
+              printchar = '+';              
+            #endif
+            BootKeyboard.press(printchar);  
+            delay(debounceDelay);
+            BootKeyboard.release(printchar);  
+            SerialWrite('+');
+            return true;
+             break; 
+
+         case 55:
+              #if defined(MISTER)           
+                printchar = ';';
+              #else
+                printchar = ':';              
+              #endif
+              BootKeyboard.press(printchar);  
+              delay(debounceDelay);
+              BootKeyboard.release(printchar);  
+              SerialWrite(printchar);
+              return true;
+              break; 
+              
+         case 56:
+              #if defined(MISTER)           
+                printchar = '[';
+              #else
+                printchar = '@';              
+              #endif
+              BootKeyboard.press(printchar);  
+              delay(debounceDelay);
+              BootKeyboard.release(printchar);  
+              SerialWrite(printchar);
+              return true;
+              break;
+               
+          case 62:
+              #if defined(MISTER)           
+                printchar = '\'';
+              #else
+                printchar = ';';              
+              #endif
+              BootKeyboard.press(printchar);  
+              delay(debounceDelay);
+              BootKeyboard.release(printchar);  
+              SerialWrite(printchar);
+              return true;
+              break; 
+
+          case 65:
+              #if defined(MISTER)           
+                BootKeyboard.press(KEY_F10);  
+                delay(debounceDelay);
+                BootKeyboard.release(KEY_F10);  
+                SerialWrite('=');  
+              #else
+                BootKeyboard.press('=');  
+                delay(debounceDelay);
+                BootKeyboard.release('=');  
+                SerialWrite('=');          
+              #endif
+
+              return true;
+               break; 
       
           case 1:
           
@@ -620,6 +709,8 @@ bool specialKeys(int keynum) {
             break;       
                 
           }
+
+
         
 
          // Shifted / modifiers (eg. shift-2 = ")
@@ -629,14 +720,7 @@ bool specialKeys(int keynum) {
       
             switch (keynum) {
               
-            case 70:
-              printchar = '!';
-              break;
-      
-            case 73:
-              printchar = '"';
-              break;
-       
+
       
             case 10:
               printchar = '#';
@@ -672,30 +756,39 @@ bool specialKeys(int keynum) {
               printchar = ')';
               break;
        
-      
+            
+            case 54:
+              printchar = '>';
+              break;
+              
             case 55:
               printchar = '[';
               break;
-       
-      
+    
+            case 57:
+              printchar = '<';
+              break;
+             
             case 62:
               printchar = ']';
               break;
        
-      
-            case 57:
-              printchar = '<';
-              break;
-       
-      
-            case 54:
-              printchar = '>';
-              break;
-       
-      
             case 67:
               printchar = '?';
               break;
+           
+            case 70:
+              printchar = '!';
+              break;
+      
+            case 73:
+              #if defined(MISTER)           
+                printchar = '@';
+              #else
+                printchar = '"';              
+              #endif
+              break;
+       
        
           }
 
